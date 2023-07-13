@@ -1,0 +1,3 @@
+[submodule "rehamovelib"]
+	path = rehamovelib
+	url = https://github.com/humancomputerintegration/rehamove-integration-lib.git
