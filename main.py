@@ -162,36 +162,22 @@ if __name__ == "__main__" :
     keylistener.start()
    # keylistener.join()
     prompt = keyinput.PromptView('neko > ')
-
+    prompt.showPrompt(False)
     isStarted = False
-    while status.is_running:
-        # Wait for any floag being set
-        prompt.showPrompt(False)
-        ev.clear()
-        ev.wait()
-        # ------------------------------------------------------------
-        # When keyinput, read the data
-        # ------------------------------------------------------------
-        keyisset = False
-        keypress_callback(command_buf)
-
-    keylistener.terminate()
-    '''
-    while(1):
-        print("*", end='')
-        sys.stdout.flush()
-        if(itr>=9):
-            print("\n")
-        itr = (itr + 1) % 10
-        time.sleep(1)
     try :
-        while status.is_running :
+        while status.is_running:
             time.sleep(0.01)
             stimulator.update()
+            if command_buf.readable():
+                keypress_callback(command_buf)
+                prompt.showPrompt(False)
+        print("the process will end\n")
     except KeyboardInterrupt as e :
-        print("key board interrupted")
+        print("key board interrupted\n")
         stimulator.switchbd.close()
 
     # if stimulator.switchbd.serial_port.is_open :
     #     stimulator.switchbd.close()
-    '''
+
+    keylistener.terminate()
+    keylistener.join()
