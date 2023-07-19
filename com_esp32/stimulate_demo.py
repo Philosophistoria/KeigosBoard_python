@@ -2,8 +2,7 @@ from lib2to3.pytree import convert
 from operator import is_
 from turtle import pu
 import numpy as np
-import stimulator
-from stimulator import State
+from switch_board import *
 import time
 import util
 
@@ -13,7 +12,7 @@ is_running = True
 is_stimulating = False
 port = "COM5"
 baudrate = 921600
-stim = stimulator.Stimulator(port, baudrate)
+stim = SwitchBoard(port, baudrate)
 
 intensity = 5
 pulse_width = 500

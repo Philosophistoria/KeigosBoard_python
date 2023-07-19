@@ -1,25 +1,9 @@
 # serial communication
-from tkinter.tix import MAX
+import sys
 import serial
-import struct
 import numpy as np
-import time
 # ---
-
-import util
-
-from typing import List, Tuple
-from enum import IntEnum
-
-PC_ESP32_MEASURE_REQUEST = 0xFE
-PC_ESP32_STIM_PATTERN = 0xFF
-
-ESP32_PC_MEASURE_RESULT: int = 0xFF
-STATE_HIGH: np.uint8 = 2 # connect to Vpp
-STATE_GND: np.uint8 = 1 # connect to GND
-STATE_OPEN: np.uint8 =0 # high impedance mode
-MAX_VOLUME: int = 4095
-MIN_VOLUME: int = 0
+from enum import IntEnum 
 
 class State (IntEnum) :
     High = 2
@@ -27,110 +11,77 @@ class State (IntEnum) :
     Open = 0
 
 # for electrical stimulation
-class Stimulator :
+class SwitchBoard :
 
-    ElectrodeNum = 16
-    Baudrate: int = 921600
-    Comport: str = "COM3" # change
-    # 配列的にアクセスするために、各電極の座標を計算して二次元配列にしたもの7
-    # 上のposition配列では奇数や偶数になっているが、それを 0 ~ [各軸の電極数] に変換した値
-    # ConvertedElectrodePos = np.zeros((const.ELECTRODE_NUM, 2), dtype="<i8")
-    # ElectrodeIntensities = np.zeros(const.ELECTRODE_NUM, dtype=np.float32)
+    def __init__(self, channel_num:int = 16 , port:str = "DEBUG", baudrate:int = 921600) :
+        # the number of electrodes
+        self.numof_channels:int = channel_num 
+        # serial port parameter
+        self._baudrate:int = baudrate
+        self._COM_port:str = port
 
-    def __init__(self, port, baudrate) :
-        Stimulator.Baudrate = baudrate
-        Stimulator.Comport = port
-        # self.electrode_num = 16
-        self.switch_state = np.zeros(Stimulator.ElectrodeNum, dtype="<i1")
-        self.serial_port = serial.Serial(port=Stimulator.Comport,baudrate=Stimulator.Baudrate, write_timeout=0)
+        # data header
+        self.header = 0xff
+        # switch array state: array of 1 byte integer
+        self.switch_state = np.zeros(self.numof_channels, dtype="<i1")
+        # open serial port
+        if port == "DEBUG":
+            # Option to set stdout (accept bite string) for debugging
+            self.serial_port = sys.stdout.buffer
+        else:
+            try:
+                self.serial_port = serial.Serial(port = self._COM_port, baudrate = self._baudrate, write_timeout=0)
+            except:
+                print ("Failed to open serial")
 
 
     def set_all_open(self) :
-        for i in range(0, Stimulator.ElectrodeNum) :
-            self.switch_state[i] = int(State.Open)
+        for i in range(0, self.numof_channels) :
+            self.switch_state[i] = State.Open
 
-    def set_switch_state(self, channel, state) :
-        index = channel - 1
-        if index > len(self.switch_state) :
-            print("the index is exceeded with the number of the channels")
+
+    def set_channel_state(self, channel, state) :
+        if channel < 1 or len(self.switch_state) < channel:
+            print("The index is exceeded with the number of the channels")
             return
-        
-        self.switch_state[index] = int(state)
-        # print(f"current switch state: {self.switch_state}")
+        self.switch_state[channel - 1] = state
+        print(f"current switch state: {self.switch_state}")
 
-    def get_switch_state(self, channel) :
-        index = channel - 1
-        return self.switch_state[index]
 
-    def get_all_switch_states(self) :
+    def set_all_channels_states(self, state:np.ndarray[State]) :
+        # check the length of the array given
+        if len(state) != len(self.switch_state):
+            print("The length of the list defining the switch state does not match the one declared")
+            return
+        # check if the elements in the array can be regarded as State
+        for elm in state:
+            try:
+                State(elm)
+            except ValueError:
+                print ("An element in the list given doesn't match the State(IntEnum) type")
+                return
+        print(f"current switch state: {self.switch_state}")
+        # Not to change the type of array
+        for i in range(self.numof_channels):
+            self.switch_state[i] = state[i]
+
+
+    def roll_all_channels_states(self, numof_roll):
+        self.switch_state = np.roll(self.switch_state, numof_roll) 
+
+
+    def get_channel_state(self, channel) :
+        return self.switch_state[channel - 1]
+
+
+    def get_all_channels_states(self) :
         return self.switch_state
 
-    def convert_current_to_command(current) :
-        # convert current [mA] to command (0 - 4095)
-        current = util.clamp(current, 0, 24) # max: 24mA
-        command = (current + 0.01) / 0.00566
-        return int(command)
 
-    def stimulate_2ch(self, ch1, ch2, volume, width) :
-        print(f"current switch state: {self.switch_state}")
-        print(f"volume: {volume}, width: {width}")
-        i1 = ch1 - 1
-        i2 = ch2 - 1
-
-        temp_switch_state = np.zeros(Stimulator.ElectrodeNum, dtype="<i1")
-        temp_switch_state[i1] = self.switch_state[i1]
-        temp_switch_state[i2] = self.switch_state[i2]
-
-        volume = util.clamp(volume, MIN_VOLUME, MAX_VOLUME) # constrain in case a value over 4095 is passed
-
-        l_vol = volume & 0x3f
-        h_vol = volume >> 6
-
-        # just stimulate 2 channels while keeping other switching states
-        send_data = bytearray([PC_ESP32_STIM_PATTERN, l_vol, h_vol, int(width/10.0)] + list(temp_switch_state))
-        # print(send_data)
+    def send_all_channels_states(self):
         try :
-            self.serial_port.write(send_data)
-        except Exception as e :
-            print(e)
-
-    def _set_switch_state_to_anode(self, ch) :
-        for i in range(0, Stimulator.ElectrodeNum) :
-            if (i == ch-1) :
-                self.switch_state[i] = int(State.High)
-            else :
-                self.switch_state[i] = int(State.Open)
-        self.switch_state[7] = State.Gnd # [caution] temp test
-
-    def _set_switch_state_to_cathode(self, ch) :
-        for i in range(0, Stimulator.ElectrodeNum) :
-            if (i == ch-1) :
-                self.switch_state[i] = int(State.Gnd)
-            else :
-                self.switch_state[i] = int(State.Open)
-        self.switch_state[7] = State.High # [caution] temp test
-
-    def stimulate_1ch(self, ch, state, volume, width) :
-        if (state == State.High) :
-            self._set_switch_state_to_anode(ch)
-        elif (state == State.Gnd) :
-            self._set_switch_state_to_cathode(ch)
-        
-        self.stimulate(volume, width)
-
-    def stimulate(self, volume, width) :
-        print(f"current switch state: {self.switch_state}")
-        print(f"volume: {volume}, width: {width}")
-
-        volume = util.clamp(volume, MIN_VOLUME, MAX_VOLUME)
-
-        l_vol = volume & 0x3f
-        h_vol = volume >> 6
-
-        send_data = bytearray([PC_ESP32_STIM_PATTERN, l_vol, h_vol, int(width/10.0)] + list(self.switch_state))
-        # print(send_data)
-        try :
-            self.serial_port.write(send_data)
+            data = np.append([self.header], self.switch_state)
+            self.serial_port.write(data)
         except Exception as e :
             print(e)
 
