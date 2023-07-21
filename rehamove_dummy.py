@@ -8,7 +8,8 @@ class Dummy:
         pass
 
     def change_mode(self, mode:int):
-        print (mode)
+        #print (mode)
+        pass
 
     def start(self, channel:str, wave_period:float) -> None:
         print("run")
