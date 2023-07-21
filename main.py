@@ -93,6 +93,7 @@ def keypress_callback(buf:queuebuffer.QueueBuffer) :
     global status, stimulator
 
     key = ord(buf.read())
+    #print(key)
 
     # If tty setting is C-break mode or richer, the line below is no needed
     if (key == 3):
@@ -117,37 +118,27 @@ def keypress_callback(buf:queuebuffer.QueueBuffer) :
         status.is_stimulating = False
         stimulator.stop()
     elif (key == 27):
-        timeout = 1000 #centisec
-        try:
-            # wait the other two chars comming
-            while not buf.readable_len() >= 2:
-                #print('waiting')
-                time.sleep(0.01)
-                timeout -= 1
-                print(timeout)
-                if timeout < 0:
-                    raise TimeoutError("while waiting arrow key")
-            # Check if the 2nd char is ok as arrow key
-            key = ord(buf.read())
-            if not key == 91:
-                print('not an arrow key: ' + str(key))
-                buf.flush()
-            # Check what arrow key is pressed
-            key = ord(buf.read())
-            # UP
-            if (key == 65) :
-                stimulator.intensity[stimulator.channel - 1] = np.clip(stimulator.intensity[stimulator.channel - 1] + 0.5, 0, 24)
-            # DOWN
-            elif (key == 66) :
-                stimulator.intensity[stimulator.channel - 1] = np.clip(stimulator.intensity[stimulator.channel - 1] - 0.5, 0, 24)
-            # RIGHT
-            elif (key == 67) :
-                stimulator.set_channel(((stimulator.channel -1) + 1) % stimulator.switchbd.numof_channels + 1)
-            # LEFT
-            elif (key == 68) :
-                stimulator.set_channel(((stimulator.channel -1) - 1) % stimulator.switchbd.numof_channels + 1)
-        except TimeoutError as e:
-            print(e.with_traceback())
+        buf.wait_new_data()
+        # Check if the 2nd char is ok as arrow key
+        key = ord(buf.read())
+        if not key == 91:
+            print('not an arrow key: ' + str(key))
+            buf.flush()
+        buf.wait_new_data()
+        # Check what arrow key is pressed
+        key = ord(buf.read())
+        # UP
+        if (key == 65) :
+            stimulator.intensity[stimulator.channel - 1] = np.clip(stimulator.intensity[stimulator.channel - 1] + 0.5, 0, 24)
+        # DOWN
+        elif (key == 66) :
+            stimulator.intensity[stimulator.channel - 1] = np.clip(stimulator.intensity[stimulator.channel - 1] - 0.5, 0, 24)
+        # RIGHT
+        elif (key == 67) :
+            stimulator.set_channel(((stimulator.channel -1) + 1) % stimulator.switchbd.numof_channels + 1)
+        # LEFT
+        elif (key == 68) :
+            stimulator.set_channel(((stimulator.channel -1) - 1) % stimulator.switchbd.numof_channels + 1)
 
     stimulator.print_param()
  
@@ -156,11 +147,11 @@ if __name__ == "__main__" :
     itr = 0
     ev=threading.Event()
     command_buf = observable.ObservableNotifier(queuebuffer.QueueBuffer())
+    #command_buf.notifier.debug = True
     command_buf.attatch(observer.receive_notification_by(ev.set,'write','post'))
     keylistener = keyinput.KeyListener(command_buf, '')
     keylistener.daemon = True
     keylistener.start()
-   # keylistener.join()
     prompt = keyinput.PromptView('neko > ')
     prompt.showPrompt(False)
     isStarted = False
