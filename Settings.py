@@ -1,6 +1,6 @@
 class SwitchBoard:
-    Numof_channels = 12
-    COM_Port = "/dev/ttyS9"
-    Baudrate = 1500000 #921600
+    Numof_channels:int = 12
+    COM_Port:str = "/dev/ttyS9"
+    Baudrate:int = 1500000 #921600
 class Rehamove:
-    COM_Port = "/dev/ttyS10"
+    COM_Port:str = "/dev/ttyS13"

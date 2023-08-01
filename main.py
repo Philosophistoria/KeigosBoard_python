@@ -18,9 +18,11 @@ class Stimulator:
             channel_num = Settings.SwitchBoard.Numof_channels, 
             port = "DEBUG",#Settings.SwitchBoard.COM_Port, 
             baudrate = Settings.SwitchBoard.Baudrate) 
-        self.rehamove = rehamove_dummy.Dummy("DEBUG") #Rehamove(Settings.Rehamove.COM_Port)
+        #self.rehamove = rehamove_dummy.Dummy("DEBUG")
+        self.rehamove = Rehamove(Settings.Rehamove.COM_Port)
         self.intensity = np.zeros(self.switchbd.numof_channels, dtype="<f4")
-        self.pulse_width = 200 # for each phase = 2 * 200 () + 100 (for switching) in total 
+        self.pulse_width = 200.0 # for each phase = 2 * 200 () + 100 (for switching) in total 
+        print(type(self.intensity), type(self.pulse_width))
         self.frequency = 100
         self.period = 1000.0 / self.frequency
         self.channel = 1
@@ -67,7 +69,7 @@ class Stimulator:
     # <instance>.rehamove.update() should be called at least every 2 sec while the status is stimulating
     def start(self):
         self.rehamove.change_mode(1)
-        self.rehamove.set_pulse(self.intensity, self.pulse_width)
+        self.rehamove.set_pulse(self.intensity[0], self.pulse_width)
         self.rehamove.start("red", self.period) 
     
 
@@ -76,7 +78,7 @@ class Stimulator:
 
     
     def update(self):
-        self.rehamove.set_pulse(self.intensity, self.pulse_width)
+        self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
         self.rehamove.update()
 
 
