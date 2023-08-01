@@ -1,5 +1,5 @@
-[submodule "rehamove-integration-lib"]
-	path = rehamove-integration-lib
+[submodule "rehamove_integration_lib"]
+	path = rehamove_integration_lib
 	url = https://github.com/humancomputerintegration/rehamove-integration-lib.git
 [submodule "keyinput_module"]
 	path = keyinput_module

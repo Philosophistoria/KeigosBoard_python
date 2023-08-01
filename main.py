@@ -1,4 +1,4 @@
-from rehamovelib.builds.python.linux_amd64.rehamove import * 
+from rehamove_integration_lib.builds.python.linux_amd64.rehamove import * 
 from com_esp32.switch_board import *
 import numpy as np
 import time
