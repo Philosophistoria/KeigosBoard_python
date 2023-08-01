@@ -1,4 +1,5 @@
 from rehamove_integration_lib.builds.python.linux_amd64.rehamove import * 
+from rehamove_integration_lib.builds.python.linux_amd64.rehamovelib import * 
 from com_esp32.switch_board import *
 import numpy as np
 import time
@@ -20,9 +21,8 @@ class Stimulator:
             baudrate = Settings.SwitchBoard.Baudrate) 
         #self.rehamove = rehamove_dummy.Dummy("DEBUG")
         self.rehamove = Rehamove(Settings.Rehamove.COM_Port)
-        self.intensity = np.zeros(self.switchbd.numof_channels, dtype="<f4")
+        self.intensity = np.zeros(self.switchbd.numof_channels, dtype="<f8")
         self.pulse_width = 200.0 # for each phase = 2 * 200 () + 100 (for switching) in total 
-        print(type(self.intensity), type(self.pulse_width))
         self.frequency = 100
         self.period = 1000.0 / self.frequency
         self.channel = 1
