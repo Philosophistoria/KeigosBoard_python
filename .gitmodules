@@ -3,4 +3,4 @@
 	url = https://github.com/humancomputerintegration/rehamove-integration-lib.git
 [submodule "keyinput_module"]
 	path = keyinput_module
-	url = git@github.com:Philosophistoria/pykeyinput.git
+	url = https://github.com/Philosophistoria/pykeyinput.git
