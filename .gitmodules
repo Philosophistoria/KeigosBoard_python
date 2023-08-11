@@ -1,6 +1,6 @@
 [submodule "rehamove_integration_lib"]
 	path = rehamove_integration_lib
-	url = https://github.com/humancomputerintegration/rehamove-integration-lib.git
+	url = ../rehamove-integration-lib.git
 [submodule "keyinput_module"]
 	path = keyinput_module
-	url = https://github.com/Philosophistoria/pykeyinput.git
+	url = ../pykeyinput.git
