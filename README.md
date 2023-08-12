@@ -8,6 +8,8 @@ I CONFIRMED THIS PYTHON PROGRAM WORKS ONLY UNDER LINUX_AMD64 ENVIRONMENT
 
 # How to use
 
+## Clone the repository
+
 ```
 # if not cloned
 > git clone --recursive https://github.com/Philosophistoria/KeigosSwitchingBoard_python.git
@@ -16,7 +18,13 @@ I CONFIRMED THIS PYTHON PROGRAM WORKS ONLY UNDER LINUX_AMD64 ENVIRONMENT
 > git clone https://github.com/Philosophistoria/KeigosSwitchingBoard_python.git
 > git submodule init
 > git submodule update
+```
 
+# Configuration
+open the `Setting.py` and make configurations such as COM Port
+
+# Run
+```
 # then execute the code 
 > python3 -m KeigosSwitchingBoard_python
 ```
