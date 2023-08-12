@@ -20,10 +20,10 @@ I CONFIRMED THIS PYTHON PROGRAM WORKS ONLY UNDER LINUX_AMD64 ENVIRONMENT
 > git submodule update
 ```
 
-# Configuration
+## Configuration
 open the `Setting.py` and make configurations such as COM Port
 
-# Run
+## Run
 ```
 # then execute the code 
 > python3 -m KeigosSwitchingBoard_python
