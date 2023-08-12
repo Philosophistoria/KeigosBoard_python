@@ -1,4 +1,4 @@
-from .wrappers.multichannel_EMS import Stimulator
+from .multichannel_EMS import Stimulator
 from .keyinput_module import keyinput, singlebuffer, queuebuffer
 from .keyinput_module.pyobservable import observable, observer
 

@@ -1,13 +1,12 @@
 
-from ..rehamove_integration_lib.builds.python.linux_amd64.rehamove import * 
-from ..com_esp32.switch_board import *
+from .com_esp32_switch_board import *
 import numpy as np
 import time
 import threading
 
 
-from .. import Settings
-from . import rehamove_dummy
+from . import Settings
+from .rehamove_wrapper import DRehamove
 
 
 class Stimulator:
@@ -15,18 +14,14 @@ class Stimulator:
     def __init__(self) -> None:
         self.switchbd = SwitchBoard(
             channel_num = Settings.SwitchBoard.Numof_channels, 
-            #port = "DEBUG",
-            port = Settings.SwitchBoard.COM_Port, 
-            baudrate = Settings.SwitchBoard.Baudrate,
-            #   With this mode, the switch board not only echo the header, 
-            #   it returns some reactions on every request. 
-            #   This is good for debug or something
-            #echo_mode = REACTION_MODE.ON_EVERY_REQUEST 
-            #   With this mode, nothing is returns from switch board.
-            echo_mode=REACTION_MODE.NO_REACTION 
+            port        = Settings.SwitchBoard.COM_Port, 
+            baudrate    = Settings.SwitchBoard.Baudrate,
+            echo_mode   = Settings.SwitchBoard.Reaction_Mode
             ) 
-        #self.rehamove = rehamove_dummy.Dummy("DEBUG")
-        self.rehamove = Rehamove(Settings.Rehamove.COM_Port, logger=sys.stderr)
+        self.rehamove = DRehamove(
+            port    = Settings.Rehamove.COM_Port, 
+            logger  = Settings.Rehamove.Logger
+            )
         self.intensity = np.zeros(self.switchbd.numof_channels, dtype="<f8")
         self.pulse_width = 200 # for each phase = 2 * 200 () + 100 (for switching) in total 
         self.frequency = 100
