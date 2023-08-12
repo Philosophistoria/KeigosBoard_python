@@ -1,6 +1,9 @@
 # KeigosSwitchingBoard_python
 Python script for Keigo's switching board with rehamove 3
 
+esp32 side code and hardwares: https://github.com/Philosophistoria/KeigosSwitchingBoard_esp32/blob/main/README.md
+
+
 I CONFIRMED THIS PYTHON PROGRAM WORKS ONLY UNDER LINUX_AMD64 ENVIRONMENT
 
 # How to use
