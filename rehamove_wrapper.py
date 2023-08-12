@@ -1,5 +1,7 @@
 from .rehamove_integration_lib.builds.python.linux_amd64 import rehamove 
 import sys
+from . import utils
+from .utils import bcolors
 
 
 class DRehamove():
@@ -15,37 +17,24 @@ class DRehamove():
             
 
     def __init__(self, port:str="DEBUG", logger = sys.stderr) -> None:
-        self.logger = logger
-        self.log("REHAMOVE DUMMY: port:" + port )
+        utils._logger = logger
+        utils.log("REHAMOVE DUMMY: port:" + port, color=bcolors.CYAN)
 
     def set_pulse(self, intensity:float, pulsewidth:int) -> None:
-        self.log("REHAMOVE DUMMY: intensity:   " + str(intensity))
-        self.log("REHAMOVE DUMMY: pulse width: " + str(pulsewidth))
+        utils.log("REHAMOVE DUMMY: intensity:   " + str(intensity), color=bcolors.CYAN)
+        utils.log("REHAMOVE DUMMY: pulse width: " + str(pulsewidth),color=bcolors.CYAN)
         pass
 
     def change_mode(self, mode:int):
-        self.log("REHAMOVE DUMMY: " + repr(mode))
+        utils.log("REHAMOVE DUMMY: " + repr(mode),color=bcolors.CYAN)
         pass
 
     def start(self, channel:str, wave_period:float) -> None:
-        self.log("REHAMOVE DUMMY: run ")
+        utils.log("REHAMOVE DUMMY: run ",   color=bcolors.CYAN)
 
     def end(self) -> None:
-        self.log("REHAMOVE DUMMY: stop ")
+        utils.log("REHAMOVE DUMMY: stop ",  color=bcolors.CYAN)
     
     def update(self) -> None:
-        self.log("REHAMOVE DUMMY: update")
+        utils.log("REHAMOVE DUMMY: update", color=bcolors.CYAN)
         pass
-    def log(self, text:str) -> None:
-        self.logger.write(bcolors.OKCYAN + text + bcolors.ENDC + "\n")
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
