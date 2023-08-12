@@ -22,6 +22,7 @@ I CONFIRMED THIS PYTHON PROGRAM WORKS ONLY UNDER LINUX_AMD64 ENVIRONMENT
 
 ## Configuration
 open the `Setting.py` and make configurations such as COM Port
+if you don't have the devices, set the com ports to "DEBUG" so that the program behaves dummy.
 
 ## Run
 ```
