@@ -63,7 +63,7 @@ w/o the messages to `stderr`, discard them, for example of `bash`, by the follow
 python3 -m KeigosSwitchingBoard_python > /dev/null
 ```
 
-Because `__main__.py` is prepared, and relative import is used in the `__main__.py`, so only this way (with `-m` option; executed as a module) works.
+Because `__main__.py` is prepared, and relative import is used in the `__main__.py`, so only the above way (with `-m` option; executed as a module) works.
 You can modify the relative import to absolute one in the `__main__.py`, you can execute it by:
 
 ```bash
