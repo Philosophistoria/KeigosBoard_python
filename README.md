@@ -30,14 +30,15 @@ if you'r using windows or mac
 
 ## Clone the repository
 when cloning repository, don't forget download the submodules by adding `--recursive` option or `git submodule init` / `update`.
+```bash
+git clone --recursive https://github.com/Philosophistoria/KeigosSwitchingBoard_python.git
 ```
-# if not cloned
-> git clone --recursive https://github.com/Philosophistoria/KeigosSwitchingBoard_python.git
 
-# or
-> git clone https://github.com/Philosophistoria/KeigosSwitchingBoard_python.git
-> git submodule init
-> git submodule update
+or
+```bash
+git clone https://github.com/Philosophistoria/KeigosSwitchingBoard_python.git
+git submodule init
+git submodule update
 ```
 
 ## Configuration
@@ -45,18 +46,26 @@ open the `Setting.py` and make configurations such as COM Port.
 if you don't have the devices, set the com ports to "DEBUG" so that the program behaves dummy.
 
 ## Run
-```
-# then execute the code 
-> python3 -m KeigosSwitchingBoard_python
+with any message printed to `stdout` and `stderr`
+```bash
+python3 -m KeigosSwitchingBoard_python
 ```
 
-Because `__main__.py` is prepared, and relative import is used in the __main__.py, so only this way (with `-m` option; executed as a module) works.
+w/o the messages to `stderr`, discard them, for example of `bash`, by the following:
+```bash
+python3 -m KeigosSwitchingBoard_python > /dev/null
+```
+
+Because `__main__.py` is prepared, and relative import is used in the `__main__.py`, so only this way (with `-m` option; executed as a module) works.
 You can modify the relative import to absolute one in the `__main__.py`, you can execute it by:
 
+```bash
+mv KeigosSwitchingBoard_python
+python3 __main__.py
 ```
-> mv KeigosSwitchingBoard_python
-> python3 __main__.py
-# or
-> python3 -m __main__
+or
+```bash
+mv KeigosSwitchingBoard_python
+python3 -m __main__
 ```
 
