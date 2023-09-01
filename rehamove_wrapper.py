@@ -25,6 +25,10 @@ class DRehamove():
         utils.log("REHAMOVE DUMMY: pulse width: " + str(pulsewidth),color=bcolors.CYAN)
         pass
 
+    def pulse(self, channel, current, pulse_width):
+        utils.log("REHAMOVE DUMMY: pulse() called with " + f"channel {repr(channel)}, current {current} mA, p_width {pulse_width} us", color=bcolors.CYAN)
+
+
     def change_mode(self, mode:int):
         utils.log("REHAMOVE DUMMY: " + repr(mode),color=bcolors.CYAN)
         pass

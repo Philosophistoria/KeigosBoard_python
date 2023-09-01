@@ -7,7 +7,8 @@ import threading
 
 from . import Settings
 from .rehamove_wrapper import DRehamove
-
+from enum import Enum, IntEnum 
+from . import utils
 
 class Stimulator:
 
@@ -27,6 +28,8 @@ class Stimulator:
         self.frequency = 100
         self.period = 1000.0 / self.frequency
         self.channel = 1
+        self.channel_list = [self.channel]
+        self.num_pulse_to_alt_ch = 0 
         self.reset_all_channels_states(gap=Settings.StimulatingPattern.Gap)
         self.print_param()
         self.rehamove.change_mode(1)
@@ -72,21 +75,51 @@ class Stimulator:
         self.channel = ch
         self.switchbd.send_all_channels_states()
         time.sleep(0.01)
+
+
+    def set_channel_list(self, ch_list:list):
+        self.channel = ch_list[0]
+        self.channel_list = ch_list
+
+
+    def set_num_pulse_to_alt_ch(self, num):
+        self.num_pulse_to_alt_ch = num
         
 
     # <instance>.rehamove.update() should be called at least every 2 sec while the status is stimulating
-    def start(self):
-        self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
-        self.rehamove.start("red", self.period) 
+    def start(self, altmode = False):
+        self.altmode = altmode
+        if not altmode:
+            self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
+            self.rehamove.start("red", self.period) 
+        else:
+            self.altmode_stimulation_alive = True
+            self.altmode_stimulation_thread = threading.Thread(target=self._altmode_stimulation)
+            self.altmode_stimulation_thread.start()
     
 
     def stop(self):
-        self.rehamove.end()
+        if not self.altmode:
+            self.rehamove.end()
+        else:
+            self.altmode_stimulation_alive = False
+            self.altmode_stimulation_thread.join()
 
     
     def update(self):
-        self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
-        self.rehamove.update()
+        if not self.altmode_stimulation_thread:
+            self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
+            self.rehamove.update()
+        else:
+            utils.log("updated: altmode")
+
+
+    def _altmode_stimulation(self):
+        while self.altmode_stimulation_alive:
+            self.set_channel(self.channel_list[0])
+            for i in range(self.num_pulse_to_alt_ch):
+                self.rehamove.pulse(self.channel, self.intensity[self.channel - 1], self.pulse_width)
+            self.channel_list = np.roll(self.channel_list, 1)
 
     
     def _listener_switchboard(self):
