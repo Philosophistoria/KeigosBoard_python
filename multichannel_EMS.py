@@ -27,7 +27,7 @@ class Stimulator:
         self.frequency = 100
         self.period = 1000.0 / self.frequency
         self.channel = 1
-        self.reset_all_channels_states()
+        self.reset_all_channels_states(gap=Settings.StimulatingPattern.Gap)
         self.print_param()
         self.rehamove.change_mode(1)
     

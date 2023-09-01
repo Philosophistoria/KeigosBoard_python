@@ -28,3 +28,6 @@ class Rehamove:
         In this case Dummy class object will be returned.
     '''
     Logger = sys.stderr
+
+class StimulatingPattern:
+    Gap:int = 2
