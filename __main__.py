@@ -29,16 +29,28 @@ def keypress_callback(buf:queuebuffer.QueueBuffer, status:ProcStatus, stimulator
         status.is_stimulating = not status.is_stimulating
         if(status.is_stimulating):
             print("started")
-            stimulator.start()
+            stimulator.start(altmode=False)
         else:
             print("stopped")
             stimulator.stop()
     elif (key == ord('s')) :
         status.is_stimulating = True
-        stimulator.start()
+        stimulator.start(altmode=False)
     elif (key == ord('p')) :
         status.is_stimulating = False
         stimulator.stop()
+    elif (key == ord("-")):
+        status.is_stimulating = True
+        print("alt mode (horizontal line) started")
+        stimulator.set_channel_list([stimulator.channel, stimulator.channel + 1, stimulator.channel + 2])#this function validates if the val in the list is not out of the num of channels 
+        stimulator.num_pulse_to_alt_ch = 1
+        stimulator.start(altmode=True)
+    elif (key == ord("|")):
+        status.is_stimulating = True
+        print("alt mode (vertical line) started")
+        stimulator.set_channel_list([stimulator.channel, stimulator.channel + 3, stimulator.channel + 6])
+        stimulator.num_pulse_to_alt_ch = 1
+        stimulator.start(altmode=True)
     elif (key == 27):
         buf.wait_new_data()
         # Check if the 2nd char is ok as arrow key

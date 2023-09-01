@@ -28,8 +28,11 @@ class Stimulator:
         self.frequency = 100
         self.period = 1000.0 / self.frequency
         self.channel = 1
+        # ---alt mode ----
         self.channel_list = [self.channel]
-        self.num_pulse_to_alt_ch = 0 
+        self.num_pulse_to_alt_ch = 1 
+        self.altmode = False
+        # ----------------
         self.reset_all_channels_states(gap=Settings.StimulatingPattern.Gap)
         self.print_param()
         self.rehamove.change_mode(1)
@@ -40,7 +43,8 @@ class Stimulator:
         print(  f"intensity: {np.round(self.intensity,1)}\n"
               + f"p_width:   {self.pulse_width}\n"
               + f"frequency: {self.frequency}\n"
-              + f"channel:   {self.channel}\n")
+              + f"channel:   {self.channel}\n"
+              + f"channel list:   {self.channel_list}\n")
         sys.stdout.flush()
 
     
@@ -78,6 +82,8 @@ class Stimulator:
 
 
     def set_channel_list(self, ch_list:list):
+        for i in range(len(ch_list)):
+            ch_list[i] = (ch_list[i] - 1) % Settings.SwitchBoard.Numof_channels + 1
         self.channel = ch_list[0]
         self.channel_list = ch_list
 
@@ -87,9 +93,10 @@ class Stimulator:
         
 
     # <instance>.rehamove.update() should be called at least every 2 sec while the status is stimulating
-    def start(self, altmode = False):
-        self.altmode = altmode
-        if not altmode:
+    def start(self, altmode = None):
+        if altmode != None and type(altmode) is bool:
+            self.altmode = altmode
+        if not self.altmode:
             self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
             self.rehamove.start("red", self.period) 
         else:
