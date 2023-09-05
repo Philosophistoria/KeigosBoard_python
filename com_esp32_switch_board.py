@@ -42,7 +42,7 @@ class SwitchBoard :
             self.echo_mode = REACTION_MODE(echo_mode)
         except ValueError:
             self.echo_mode = REACTION_MODE.NO_REACTION
-        utils.log(f"reaction mode: {echo_mode}", color = bcolors.PURPLE)
+        utils.log(f"SwitchBoard: reaction mode: {echo_mode}", color = bcolors.PURPLE)
 
         # switch array state: array of 1 byte integer
         self.switch_state = np.zeros(self.numof_channels, dtype="<u1")
@@ -54,14 +54,14 @@ class SwitchBoard :
         else:
             try:
                 self.serial_port = serial.Serial(port = self._COM_port, baudrate = self._baudrate, write_timeout=0)
-                utils.log("Successed to open serial port" + self._COM_port, color = bcolors.PURPLE)
+                utils.log("SwitchBoard: Successed to open serial port" + self._COM_port, color = bcolors.PURPLE)
                 if self.serial_port == None:
-                    utils.log("Failed to open serial port" + self._COM_port, color = bcolors.PURPLE)
+                    utils.log("SwitchBoard: Failed to open serial port" + self._COM_port, color = bcolors.PURPLE)
                 if self.echo_mode != REACTION_MODE.NO_REACTION:
                     self.serial_port.write([REQUEST.CHANGE_REACTION_MODE.value, self.echo_mode.value])
             except Exception as e:
-                utils.log("Failed to open serial port" + self._COM_port, color = bcolors.YELLOW)
-                utils.log(e, color = bcolors.YELLOW)
+                utils.log(f"SwitchBoard: Failed to open serial port: {self._COM_port}", color = bcolors.YELLOW)
+                utils.log(f"SwitchBoard: {e}", color = bcolors.YELLOW)
 
 
     def set_all_open(self) :
@@ -73,43 +73,43 @@ class SwitchBoard :
         try:
             State(state)
         except ValueError:
-            utils.log("An element in the list given doesn't match the State(IntEnum) type", color = bcolors.YELLOW)
+            utils.log("SwitchBoard: An element in the list given doesn't match the State(IntEnum) type", color = bcolors.YELLOW)
             return -1
         except Exception as e:
-            utils.log(e, color = bcolors.YELLOW)
+            utils.log(f"SwitchBoard: {e}", color = bcolors.YELLOW)
             return -1
         if channel < 1 or len(self.switch_state) < channel:
-            utils.log("The index is exceeded with the number of the channels", color = bcolors.YELLOW)
+            utils.log("SwitchBoard: The index is exceeded with the number of the channels", color = bcolors.YELLOW)
             return -1
         self.switch_state[channel - 1] = state
-        utils.log(f"current switch state: {self.switch_state}", color = bcolors.PURPLE)
+        utils.log(f"SwitchBoard: current switch state: {self.switch_state}", color = bcolors.PURPLE)
         return 0
 
 
     def set_all_channels_states(self, state:np.ndarray[State]) :
         # check the length of the array given
         if len(state) != self.numof_channels:
-            utils.log("The length of the list defining the switch state does not match the one declared", color = bcolors.YELLOW)
+            utils.log("SwitchBoard: The length of the list defining the switch state does not match the one declared", color = bcolors.YELLOW)
             return
         # check if the elements in the array can be regarded as State
         for elm in state:
             try:
                 State(elm)
             except ValueError:
-                utils.log("An element in the list given doesn't match the State(IntEnum) type", color = bcolors.YELLOW)
+                utils.log("SwitchBoard: An element in the list given doesn't match the State(IntEnum) type", color = bcolors.YELLOW)
                 return
             except Exception as e:
-                utils.log(e, color = bcolors.YELLOW)
+                utils.log(f"SwitchBoard: {e}", color = bcolors.YELLOW)
                 return
         # Not to change the type of array
         for i in range(self.numof_channels):
             self.switch_state[i] = state[i].value
-        utils.log(f"switch state was reset.  current state: {self.switch_state}", color = bcolors.PURPLE)
+        utils.log(f"SwitchBoard: switch state was reset.  current state: {self.switch_state}", color = bcolors.PURPLE)
 
 
     def roll_all_channels_states(self, numof_roll):
         self.switch_state = np.roll(self.switch_state, numof_roll) 
-        utils.log(f"switch state was rolled. current state: {self.switch_state}", color = bcolors.PURPLE)
+        utils.log(f"SwitchBoard: switch state was rolled. current state: {self.switch_state}", color = bcolors.PURPLE)
 
 
     def get_channel_state(self, channel) :
@@ -126,14 +126,14 @@ class SwitchBoard :
             data = np.append(REQUEST.CHANGE_STATE.value, self.switch_state)
             utils.log(f"{list(data), data.dtype}", color = bcolors.PURPLE)
             if self._COM_port == "DEBUG":
-                utils.log(f"DEBUG MODE - echo (size {len(data)})", color = bcolors.PURPLE)
+                utils.log(f"SwitchBoard: DEBUG MODE - echo (size {len(data)})", color = bcolors.PURPLE)
                 data = repr(data)
                 data += "\n"
             self.serial_port.write(data)
             self.serial_port.write(np.array([REQUEST.CHECK_STATE.value], dtype="uint8"))
             self.serial_port.flush()
         except Exception as e :
-            utils.log(e, color = bcolors.PURPLE)
+            utils.log(f"SwitchBoard: {e}", color = bcolors.YELLOW)
 
 
     def read_serial(self):
@@ -146,7 +146,7 @@ class SwitchBoard :
                 self.rcvbuf.write (bcolors.BLUE + data.decode() + "\n" + bcolors.END)
                 self.rcvbuf.write (bcolors.BLUE + "=== end of data ===\n" + bcolors.END)
         except Exception as e :
-            utils.log(e, color = bcolors.PURPLE)
+            utils.log(f"SwitchBoard: {e}", color = bcolors.PURPLE)
 
     def close(self) :
         self.serial_port.flush()
