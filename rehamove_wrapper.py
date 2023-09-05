@@ -17,8 +17,13 @@ class DRehamove():
             
 
     def __init__(self, port:str="DEBUG", logger = sys.stderr) -> None:
+        self.mode = 0
         utils._logger = logger
         utils.log("REHAMOVE DUMMY: port:" + port, color=bcolors.CYAN)
+
+    def get_mode(self):
+        return self.mode
+        
 
     def set_pulse(self, intensity:float, pulsewidth:int) -> None:
         utils.log("REHAMOVE DUMMY: intensity:   " + str(intensity), color=bcolors.CYAN)
@@ -30,7 +35,8 @@ class DRehamove():
 
 
     def change_mode(self, mode:int):
-        utils.log("REHAMOVE DUMMY: " + repr(mode),color=bcolors.CYAN)
+        self.mode = mode
+        utils.log("REHAMOVE DUMMY: " + repr(mode), color=bcolors.CYAN)
         pass
 
     def start(self, channel:str, wave_period:float) -> None:

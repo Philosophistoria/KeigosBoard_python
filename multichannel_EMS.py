@@ -35,7 +35,8 @@ class Stimulator:
         # ----------------
         self.reset_all_channels_states(gap=Settings.StimulatingPattern.Gap)
         self.print_param()
-        self.rehamove.change_mode(1)
+        if self.rehamove.get_mode() == 0:
+            self.rehamove.change_mode(1)
     
 
     def print_param (self) -> None:
@@ -97,11 +98,13 @@ class Stimulator:
         if altmode != None and type(altmode) is bool:
             self.altmode = altmode
         if not self.altmode:
-            self.rehamove.change_mode(1)
+            if self.rehamove.get_mode() == 0:
+                self.rehamove.change_mode(1)
             self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
             self.rehamove.start("red", self.period) 
         else:
-            self.rehamove.change_mode(0)
+            if self.rehamove.get_mode() == 1:
+                self.rehamove.change_mode(0)
             self.altmode_stimulation_alive = True
             self.altmode_stimulation_thread = threading.Thread(target=self._altmode_stimulation)
             self.altmode_stimulation_thread.start()
@@ -117,7 +120,8 @@ class Stimulator:
     
     def update(self):
         if not self.altmode:
-            self.rehamove.change_mode(1)
+            if self.rehamove.get_mode() == 0:
+                self.rehamove.change_mode(1)
             self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
             self.rehamove.update()
         else:
