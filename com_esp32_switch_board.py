@@ -61,7 +61,7 @@ class SwitchBoard :
                     self.serial_port.write([REQUEST.CHANGE_REACTION_MODE.value, self.echo_mode.value])
             except Exception as e:
                 utils.log(f"SwitchBoard: Failed to open serial port: {self._COM_port}", color = bcolors.YELLOW)
-                utils.log(f"SwitchBoard: {e}", color = bcolors.YELLOW)
+                utils.log(f"SwitchBoard: {sys._getframe().f_code.co_name}: {e}", color = bcolors.YELLOW)
 
 
     def set_all_open(self) :
@@ -73,10 +73,10 @@ class SwitchBoard :
         try:
             State(state)
         except ValueError:
-            utils.log("SwitchBoard: An element in the list given doesn't match the State(IntEnum) type", color = bcolors.YELLOW)
+            utils.log(f"SwitchBoard: An element in the list given doesn't match the State(IntEnum) type", color = bcolors.YELLOW)
             return -1
         except Exception as e:
-            utils.log(f"SwitchBoard: {e}", color = bcolors.YELLOW)
+            utils.log(f"SwitchBoard: {sys._getframe().f_code.co_name}: {e}", color = bcolors.YELLOW)
             return -1
         if channel < 1 or len(self.switch_state) < channel:
             utils.log("SwitchBoard: The index is exceeded with the number of the channels", color = bcolors.YELLOW)
@@ -99,7 +99,7 @@ class SwitchBoard :
                 utils.log("SwitchBoard: An element in the list given doesn't match the State(IntEnum) type", color = bcolors.YELLOW)
                 return
             except Exception as e:
-                utils.log(f"SwitchBoard: {e}", color = bcolors.YELLOW)
+                utils.log(f"SwitchBoard: {sys._getframe().f_code.co_name}: {e}", color = bcolors.YELLOW)
                 return
         # Not to change the type of array
         for i in range(self.numof_channels):
@@ -133,7 +133,7 @@ class SwitchBoard :
             self.serial_port.write(np.array([REQUEST.CHECK_STATE.value], dtype="uint8"))
             self.serial_port.flush()
         except Exception as e :
-            utils.log(f"SwitchBoard: {e}", color = bcolors.YELLOW)
+            utils.log(f"SwitchBoard: {sys._getframe().f_code.co_name}: {e}", color = bcolors.YELLOW)
 
 
     def read_serial(self):
