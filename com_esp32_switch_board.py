@@ -125,12 +125,14 @@ class SwitchBoard :
             #data = np.append(np.array([REQUEST.CHANGE_STATE], dtype="int8"), self.switch_state)
             data = np.append(REQUEST.CHANGE_STATE.value, self.switch_state)
             utils.log(f"{list(data), data.dtype}", color = bcolors.PURPLE)
+            check = np.array([REQUEST.CHECK_STATE.value], dtype="uint8")
             if self._COM_port == "DEBUG":
                 utils.log(f"SwitchBoard: DEBUG MODE - echo (size {len(data)})", color = bcolors.PURPLE)
                 data = repr(data)
                 data += "\n"
+                check = repr(check)
             self.serial_port.write(data)
-            self.serial_port.write(np.array([REQUEST.CHECK_STATE.value], dtype="uint8"))
+            self.serial_port.write(check)
             self.serial_port.flush()
         except Exception as e :
             utils.log(f"SwitchBoard: {sys._getframe().f_code.co_name}: {e}", color = bcolors.YELLOW)
