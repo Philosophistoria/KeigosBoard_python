@@ -49,7 +49,7 @@ class SwitchBoard :
         # open serial port
         if port == "DEBUG":
             # Option to set stdout for debugging
-            self.serial_port = sys.stdout#.buffer
+            self.serial_port = sys.stderr#.buffer
             utils.log("SwitchBoard: DEBUG MODE - it will echo the bytes on stdout", color = bcolors.PURPLE)
         else:
             try:
@@ -128,9 +128,8 @@ class SwitchBoard :
             check = np.array([REQUEST.CHECK_STATE.value], dtype="uint8")
             if self._COM_port == "DEBUG":
                 utils.log(f"SwitchBoard: DEBUG MODE - echo (size {len(data)})", color = bcolors.PURPLE)
-                data = repr(data)
-                data += "\n"
-                check = repr(check)
+                data = "SitchBoard: DEBUG MODE: " + repr(data) + "\n"
+                check ="SitchBoard: DEBUG MODE: " + repr(check) + "\n"
             self.serial_port.write(data)
             self.serial_port.write(check)
             self.serial_port.flush()
