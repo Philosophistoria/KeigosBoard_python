@@ -24,9 +24,9 @@ class Stimulator:
             logger  = Settings.Rehamove.Logger
             )
         self.intensity = np.zeros(self.switchbd.numof_channels, dtype="<f8")
-        self.pulse_width = 200 # for each phase = 2 * 200 () + 100 (for switching) in total 
-        self.frequency = 100
-        self.period = 1000.0 / self.frequency
+        self.pulse_width = Settings.StimulatingPattern.Pulse_Width
+        self.frequency = Settings.StimulatingPattern.Frequency
+        self.period = 1.0 / self.frequency
         self.channel = 1
         # ---alt mode ----
         self.channel_list = [self.channel]
@@ -97,9 +97,11 @@ class Stimulator:
         if altmode != None and type(altmode) is bool:
             self.altmode = altmode
         if not self.altmode:
+            self.rehamove.change_mode(1)
             self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
             self.rehamove.start("red", self.period) 
         else:
+            self.rehamove.change_mode(0)
             self.altmode_stimulation_alive = True
             self.altmode_stimulation_thread = threading.Thread(target=self._altmode_stimulation)
             self.altmode_stimulation_thread.start()
@@ -114,7 +116,8 @@ class Stimulator:
 
     
     def update(self):
-        if not self.altmode_stimulation_thread:
+        if not self.altmode:
+            self.rehamove.change_mode(1)
             self.rehamove.set_pulse(self.intensity[self.channel - 1], self.pulse_width)
             self.rehamove.update()
         else:
@@ -122,10 +125,17 @@ class Stimulator:
 
 
     def _altmode_stimulation(self):
+        t = 0
         while self.altmode_stimulation_alive:
             self.set_channel(self.channel_list[0])
             for i in range(self.num_pulse_to_alt_ch):
                 self.rehamove.pulse(self.channel, self.intensity[self.channel - 1], self.pulse_width)
+                t_tmp = time.perf_counter()
+                if t != 0 and t_tmp - t < self.period:
+                    time.sleep(self.period - (t_tmp - t))
+                else:
+                    time.sleep(self.period)
+                t = t_tmp
             self.channel_list = np.roll(self.channel_list, 1)
 
     
