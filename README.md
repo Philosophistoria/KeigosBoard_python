@@ -25,7 +25,7 @@ if you'r using windows or mac
        ```
      - somehow, the `rehamove.py` prints all messages to `stdout`, and it is really bothering.
           - so I chagnged the `rehamove.py` for Linux as it logs the messages to `stderr`.
-          - if you also bothering about the many meeages from `rehamove.py` I would recommend changing the one for your system so that the messages printed out to `stderr` 
+          - if you are also bothered by the many meeages from `rehamove.py` I would recommend changing the one for your system so that the messages printed out to `stderr` 
 1. you could find some wiered strings appear when text printed.
     - may turn on the Virtual Terminal Sequences(ANSI escape sequences), or change `utils.bcolors`'s elements to null string `''`
     - this is because some ANSI escape sequences code is inserted to `print()` in `rehamove_wrapper.py` and `com_esp32_switch_board.py` to change the color of text print()ed to the console.
