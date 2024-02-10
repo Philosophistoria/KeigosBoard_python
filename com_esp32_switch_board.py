@@ -62,6 +62,7 @@ class SwitchBoard :
             except Exception as e:
                 utils.log("Failed to open serial port" + self._COM_port, color = bcolors.YELLOW)
                 utils.log(e, color = bcolors.YELLOW)
+                quit()
 
 
     def set_all_open(self) :
