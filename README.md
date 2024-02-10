@@ -44,7 +44,7 @@ git submodule update
 - open the `Setting.py` and make configurations such as COM Port.
      - if you don't have the devices, set the com ports to "DEBUG" so that the program behaves dummy.
 
-- inside of `rehamove_wrapper.py`, please modify the first import line as below
+- as descrived above as well, inside of `rehamove_wrapper.py`, please modify the first import line as below
   ```diff
   - from .rehamove_integration_lib.builds.python.linux_amd64 import rehamove
   + from .rehamove_integration_lib.builds.python.windows_amd64 import rehamove
