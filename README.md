@@ -6,10 +6,10 @@ esp32 side code and hardwares: https://github.com/Philosophistoria/KeigosSwitchi
 ---
 **I CONFIRMED THIS PYTHON PROGRAM WORKS ONLY WITH PYTHON3.10 and LINUX_AMD64 ENVIRONMENT**
 
-if you'r using windows or mac
-
-1. maybe the keyinput module doesn't work.
-     - -> please prepare other single key input module for your system and change keybind code in `__main__.py`
+1. the keyinput module might not work.
+     - if so, please prepare other single key input module for your system and change keybind code in `__main__.py`
+     - for example, https://pypi.org/project/getch/
+       
 1. rehastim module have to be modified to appropriate implementation
      - inside of `rehamove_wrapper.py`, please modify the first import line as below
        ```diff
@@ -18,17 +18,9 @@ if you'r using windows or mac
        # or
        + from .rehamove_integration_lib.builds.python.macOS import rehamove
        ```
-     - you might have to change an absolute import to a relative import in the `rehamove.py`
-       ```diff
-       - import rehamovelib
-       + from . import rehamovelib
-       ```
-     - somehow, the `rehamove.py` prints all messages to `stdout`, and it is really bothering.
-          - so I chagnged the `rehamove.py` for Linux as it logs the messages to `stderr`.
-          - if you are also bothered by the many meeages from `rehamove.py` I would recommend changing the one for your system so that the messages printed out to `stderr` 
 1. you could find some wiered strings appear when text printed.
-    - may turn on the Virtual Terminal Sequences(ANSI escape sequences), or change `utils.bcolors`'s elements to null string `''`
-    - this is because some ANSI escape sequences code is inserted to `print()` in `rehamove_wrapper.py` and `com_esp32_switch_board.py` to change the color of text print()ed to the console.
+    - it could be solved by turning on the Virtual Terminal Sequences(ANSI escape sequences), or change `utils.bcolors`'s elements to null string `''`
+    - this may happen because some ANSI escape sequence codes are inserted to `print()` in `rehamove_wrapper.py` and `com_esp32_switch_board.py` to change the color of text print()ed to the console.
 
 
 ---
@@ -49,8 +41,16 @@ git submodule update
 ```
 
 ## Configuration
-open the `Setting.py` and make configurations such as COM Port.
-if you don't have the devices, set the com ports to "DEBUG" so that the program behaves dummy.
+- open the `Setting.py` and make configurations such as COM Port.
+     - if you don't have the devices, set the com ports to "DEBUG" so that the program behaves dummy.
+
+- inside of `rehamove_wrapper.py`, please modify the first import line as below
+  ```diff
+  - from .rehamove_integration_lib.builds.python.linux_amd64 import rehamove
+  + from .rehamove_integration_lib.builds.python.windows_amd64 import rehamove
+  # or
+  + from .rehamove_integration_lib.builds.python.macOS import rehamove
+  ```
 
 ## Run
 with any message printed to `stdout` and `stderr`
